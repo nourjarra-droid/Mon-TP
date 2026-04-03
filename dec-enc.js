@@ -1,0 +1,34 @@
+const JSRSASign = require("jsrsasign");
+
+const GenerateJWT = (header, claims, key) => {
+  const sHeader = JSON.stringify(header);
+  const sPayload = JSON.stringify(claims);
+  const sJWT = JSRSASign.jws.JWS.sign("HS512", sHeader, sPayload, key);
+  return sJWT;
+};
+
+const DecodeJWT = sJWS => {
+  const aJWT = sJWS.split(".");
+  const uHeader = JSRSASign.b64utos(aJWT[0]);
+  const uClaim = JSRSASign.b64utos(aJWT[1]);
+  const pHeader = JSRSASign.jws.JWS.readSafeJSONString(uHeader);
+  const pClaim = JSRSASign.jws.JWS.readSafeJSONString(uClaim);
+  return pClaim;
+};
+
+const ValidateJWT = (token, key) => {
+  try {
+    const isValid = JSRSASign.jws.JWS.verifyJWT(token, key, { alg: ["HS512"] });
+    if (!isValid) console.log("Invalid token: signature does not match");
+    return isValid;
+  } catch (err) {
+    console.log("Error verifying JWT:", err.message);
+    return false;
+  }
+};
+
+module.exports = {
+  GenerateJWT,
+  DecodeJWT,
+  ValidateJWT
+};
