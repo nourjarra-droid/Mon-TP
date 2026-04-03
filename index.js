@@ -27,7 +27,7 @@ app.post("/api/DecodeJWT", (req, res) => {
   if (!token) {
     return res.status(400).json({ error: "Token is required" });
   }
-
+// test commit
   try {
     const decoded = DecodeJWT(token);
     res.json(decoded);
